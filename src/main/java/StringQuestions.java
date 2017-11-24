@@ -88,7 +88,6 @@ public class StringQuestions {
         //return haystack.contains(needle);
     }
 
-    // anagram means same letters in both words
     static boolean isAnagram(String word1, String word2) {
         if (word1 == null || word2 == null || word1.length() != word2.length()) {
             return false;
@@ -127,25 +126,27 @@ public class StringQuestions {
         return (word1 + word1).contains(word2);
     }
 
-    private static Set<String> recPerm(String current, String word, int r) {
-        Set<String> out = new HashSet<>();
+    private static List<String> recPerm(String current, String word, int r) {
+        List<String> out = new ArrayList<>();
         if (r == 0) {
             out.add(current);
             return out;
         } else {
             char[] chars = word.toCharArray();
+            Set<Character> usedCharacters = new HashSet<>();
             for (int i = 0; i < chars.length; i++) {
-                out.addAll(recPerm (current + chars[i], new StringBuilder(word).deleteCharAt(i).toString(), r - 1));
+                char currentChar = chars[i];
+                if (!usedCharacters.contains(currentChar)) {
+                    usedCharacters.add(currentChar);
+                    out.addAll(recPerm (current + chars[i], new StringBuilder(word).deleteCharAt(i).toString(), r - 1));
+                }
             }
         }
         return out;
     }
 
     static List<String> getPermutations(String word, int r) {
-        List<String> permutations = new ArrayList<>();
-        Set<String> uniquePermutations = recPerm("", word, r);
-        permutations.addAll(uniquePermutations);
-        return permutations;
+        return recPerm("", word, r);
     }
 
     static boolean isNested(String line) {
@@ -231,43 +232,6 @@ public class StringQuestions {
      */
     static List<String> getLongerNextlines(String text) {
 
-        // to be strong wrestler
-        // rules:
-        // must be ascending line length
-        // can only split on spaces
-        // maximize number of lines
-        // if the current line is longer than the remaining characters, add all to last line
-
-
-        // what if we start from the end
-        // add the last word
-        // if the word behind is longer than or equal to the last word add it to the current line
-        // if the word behind is shorter, create a new line
-        // if you have to combine two words, check if the combo is shorter than the previous line.
-        // if it is longer, pop off the last word of that line, and add it to the line before.
-
-
-        //wrestler
-        // strong \n wrestler
-        // be \n strong \n wrestler
-        // to be \n strong \n wrestler
-
-
-        // this is great test sentence eh
-        //eh
-        // sentence eh
-        // test \n sentence eh
-        // great test \n sentence eh
-        // is \n great test \n sentence eh
-        // this is \n great test \n sentence eh
-
-        // this is ok tes sentence
-
-        // sentence
-        // tes \n sentence
-        // ok \n tes \n sentence
-        //  is \n ok tes \n sentence
-        // this \n is ok \n tes sentence
 
         String[] words = text.split("\\s+");
         List<String> out = new ArrayList<String>();
@@ -290,33 +254,6 @@ public class StringQuestions {
         }
         Collections.reverse(out);
         return  out;
-
-/*
-
-        char[] chars = text.toCharArray();
-        int remainingChars = text.length();
-        int currentLineLength = 0;
-        List<String> result = new ArrayList<>();
-        StringBuilder currentLine = new StringBuilder("");
-        // the previous line can't be more longer than the remaining number of characters
-        // if this is true, just add all the characters
-        for (char c : chars) {
-            remainingChars--;
-            if (Character.isWhitespace(c)) {
-                if (currentLine.length() > currentLineLength && currentLine.length() < remainingChars) {
-                    result.add(currentLine.toString());
-                    currentLineLength = currentLine.length();
-                    currentLine = new StringBuilder("");
-                } else {
-                    currentLine.append(c);
-                }
-            } else {
-                currentLine.append(c);
-            }
-        }
-        result.add(currentLine.toString());
-        return result;
-        */
     }
 
 
@@ -352,7 +289,6 @@ public class StringQuestions {
                     capitalizeWord(text, i, word.length());
                     isFirstWord = false;
                 }
-                // increment wordstart to the character after the current whitespace character
                 sb = new StringBuilder("");
             }
         }
@@ -432,12 +368,18 @@ public class StringQuestions {
     }
 
     public static void main(String[] args) {
+        int count = 0;
+        for (String s : getPermutations("aba", 3)) {
+            count++;
+            System.out.println(s);
+        }
+        System.out.println("count: " + count);
+        /*
         //List<String> lines = getLongerNextlines("to be strong wrestler");
         List<String> lines = getLongerNextlines("this is ok tes sentence");
         for (String line : lines) {
             System.out.println(line);
         }
-        /*
         char[] encodedLine = "hello%20world%21".toCharArray();
         urlDecode(encodedLine);
         System.out.println(encodedLine);
